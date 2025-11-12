@@ -5,12 +5,13 @@ FROM maven:3.9.1-eclipse-temurin-17 AS build
 
 WORKDIR /build
 
-# Descargar y descomprimir Spring Boot starter
-RUN curl -L -o starter.zip https://github.com/jodconverter/jodconverter/releases/download/v4.4.11/jodconverter-spring-boot-starter-4.4.11.zip && \
-    unzip starter.zip && \
-    mv jodconverter-spring-boot-starter-4.4.11/* .
+# Descargar solo el ZIP de Spring Boot starter
+RUN curl -L -o springboot.zip https://github.com/jodconverter/jodconverter/releases/download/v4.4.11/jodconverter-spring-boot-starter-4.4.11.zip && \
+    unzip springboot.zip && \
+    mv jodconverter-spring-boot-starter-4.4.11/* . && \
+    rm -f springboot.zip
 
-# Construir el JAR con Maven
+# Construir el JAR ejecutable
 RUN mvn package -DskipTests
 
 # =========================
@@ -37,10 +38,9 @@ ENV JODCONVERTER_TASK_QUEUE_TIMEOUT=60000
 ENV SPRING_PROFILES_ACTIVE=prod
 ENV SERVER_PORT=${PORT}
 
-# Exponer puerto
 EXPOSE 8080
 
-# Arranque del servidor REST
 ENTRYPOINT ["java","-jar","jodconverter-spring-boot.jar"]
+
 
 
