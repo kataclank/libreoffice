@@ -8,17 +8,16 @@ RUN apt-get update && \
     libreoffice \
     libreoffice-java-common \
     curl \
-    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Descargar y descomprimir JODConverter 4.4.11
-RUN curl -fSL -o jodconverter.zip https://github.com/jodconverter/jodconverter/releases/download/v4.4.11/jodconverter-4.4.11.zip && \
-    unzip jodconverter.zip && \
-    mv jodconverter-4.4.11/* /app && \
-    rm -rf jodconverter.zip jodconverter-4.4.11
+# Descargar directamente el JAR ejecutable de JODConverter Spring Boot
+RUN curl -L -o jodconverter-spring-boot-4.4.11.jar \
+    https://repo1.maven.org/maven2/org/jodconverter/jodconverter-spring-boot/4.4.11/jodconverter-spring-boot-4.4.11.jar
 
+# Exponer puerto
 EXPOSE 8080
 
+# Ejecutar el servidor
 ENTRYPOINT ["java", "-jar", "jodconverter-spring-boot-4.4.11.jar"]
