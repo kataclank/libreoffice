@@ -1,7 +1,7 @@
 # =========================
 # Base: Java + LibreOffice
 # =========================
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-jammy
 
 LABEL maintainer="rafa@ejemplo.com"
 LABEL description="LibreOffice + JODConverter REST optimizado para Render.com Free"
