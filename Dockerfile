@@ -1,44 +1,30 @@
-# =========================
-# Base: Java + LibreOffice
-# =========================
+# Usa una imagen base de Java ligera
 FROM eclipse-temurin:17-jdk-jammy
 
-LABEL maintainer="rafa@ejemplo.com"
-LABEL description="LibreOffice + JODConverter REST optimizado para Render.com Free"
+# Versión de JODConverter
+ENV JOD_VERSION=4.4.8
+ENV SERVER_PORT=8080
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Instalar LibreOffice headless y dependencias
+# Instalar LibreOffice y utilidades necesarias
 RUN apt-get update && \
-    apt-get install -y libreoffice libreoffice-writer libreoffice-calc libreoffice-impress \
-    fonts-dejavu-core fonts-liberation curl unzip && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends \
+    libreoffice \
+    libreoffice-java-common \
+    curl \
+    unzip && \
+    rm -rf /var/lib/apt/lists/*
 
-# =========================
-# App: JODConverter
-# =========================
+# Directorio de la app
 WORKDIR /app
 
-# Descargar JODConverter Spring Boot server
-ENV JOD_VERSION=4.4.8
+# Descargar y preparar JODConverter
 RUN curl -L -o jodconverter.zip https://github.com/sbraconnier/jodconverter/releases/download/v${JOD_VERSION}/jodconverter-spring-boot-${JOD_VERSION}.zip && \
     unzip jodconverter.zip && \
     mv jodconverter-spring-boot-${JOD_VERSION}/* /app && \
     rm -rf jodconverter.zip jodconverter-spring-boot-${JOD_VERSION}
 
-# =========================
-# Configuración
-# =========================
-# Render asigna el puerto mediante la variable $PORT
-EXPOSE 10000
-ENV SERVER_PORT=${PORT}
-ENV JODCONVERTER_OFFICE_HOME=/usr/lib/libreoffice
-ENV JODCONVERTER_OFFICE_PORT_NUMBERS=2002
-ENV JODCONVERTER_TASK_EXECUTION_TIMEOUT=300000
-ENV JODCONVERTER_TASK_QUEUE_TIMEOUT=60000
-ENV SPRING_PROFILES_ACTIVE=prod
+# Exponer el puerto
+EXPOSE 8080
 
-# =========================
-# Arranque
-# =========================
-ENTRYPOINT ["java","-jar","jodconverter-spring-boot.jar"]
+# Comando de arranque
+ENTRYPOINT ["java", "-jar", "jodconverter-spring-boot-4.4.8.jar"]
