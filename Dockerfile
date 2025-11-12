@@ -1,9 +1,8 @@
-# Usa una imagen base de Java ligera
+# Base: Java 17 ligera
 FROM eclipse-temurin:17-jdk-jammy
 
-# Versión de JODConverter
-ENV JOD_VERSION=4.4.8
-ENV SERVER_PORT=8080
+# Puerto del servicio (Render asigna la variable $PORT)
+ENV SERVER_PORT=${PORT}
 
 # Instalar LibreOffice y utilidades necesarias
 RUN apt-get update && \
@@ -14,17 +13,17 @@ RUN apt-get update && \
     unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Directorio de la app
+# Directorio de la aplicación
 WORKDIR /app
 
-# Descargar y preparar JODConverter
-RUN curl -L -o jodconverter.zip https://github.com/sbraconnier/jodconverter/releases/download/v${JOD_VERSION}/jodconverter-spring-boot-${JOD_VERSION}.zip && \
+# Descargar y descomprimir JODConverter (versión fija 4.4.11)
+RUN curl -L -o jodconverter.zip https://github.com/jodconverter/jodconverter/releases/download/v4.4.11/jodconverter-4.4.11.zip && \
     unzip jodconverter.zip && \
-    mv jodconverter-spring-boot-${JOD_VERSION}/* /app && \
-    rm -rf jodconverter.zip jodconverter-spring-boot-${JOD_VERSION}
+    mv jodconverter-4.4.11/* /app && \
+    rm -rf jodconverter.zip jodconverter-4.4.11
 
 # Exponer el puerto
 EXPOSE 8080
 
-# Comando de arranque
-ENTRYPOINT ["java", "-jar", "jodconverter-spring-boot-4.4.8.jar"]
+# Ejecutar el servidor JODConverter
+ENTRYPOINT ["java", "-jar", "jodconverter-spring-boot-4.4.11.jar"]
